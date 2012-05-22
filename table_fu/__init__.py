@@ -353,6 +353,8 @@ class Row(object):
         Set the value for a given cell
         """
         if not column_name in self.table.default_columns:
+            if column_name in self.table.columns:
+                raise ValueError("%s is a virtual column in this table and can't be set" % column_name)
             raise KeyError("%s isn't a column in this table" % column_name)
         index = self.table.default_columns.index(column_name)
         self.cells[index] = value
