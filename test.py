@@ -181,6 +181,10 @@ class DatumTest(TableTest):
             modernism.values()
         )
 
+    def test_synthetic_column(self):
+        t = TableFu(self.csv_file,formatting={'Combo': { 'filter': 'join', 'args': ['Author', 'Best Book'], 'options': {'delimiter': ',' }}})
+        for test_row,row in zip(self.table[1:],t.rows):
+            self.assertEqual(','.join(test_row[:2]), str(row['Combo']))
 
 class ErrorTest(TableTest):
     
