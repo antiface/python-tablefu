@@ -327,6 +327,8 @@ class Row(object):
         if column_name in self.table.default_columns:
             index = self.table.default_columns.index(column_name)
             return Datum(self.cells[index], self.row_num, column_name, self.table)
+        if column_name in self.table.formatting:
+            return Datum(None, self.row_num, column_name, self.table)
         return default
     
     def keys(self):
