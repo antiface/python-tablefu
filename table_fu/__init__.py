@@ -144,6 +144,7 @@ class TableFu(object):
 
     def transform(self, column_name, func):
         if column_name not in self.default_columns:
+            # not reasonable to support virtual columns in transform, because one can't assign to them
             raise ValueError("%s isn't a column in this table" % column_name)
 
         if not callable(func):
@@ -156,18 +157,20 @@ class TableFu(object):
             row[index] = val
 
     def values(self, column_name, unique=False):
-        if column_name not in self.default_columns:
-            raise ValueError("%s isn't a column in this table" % column_name)
-        index = self.default_columns.index(column_name)
-        result = [row[index] for row in self.table]
+        if column_name in self.formatting:
+            result = [str(row[column_name]) for row in self.rows]
+        else:    
+            if column_name not in self.default_columns:
+                raise ValueError("%s isn't a column in this table" % column_name)
+            else:
+                index = self.default_columns.index(column_name)
+                result = [row[index] for row in self.table]
+
         if unique:
             return set(result)
         return result
     
     def total(self, column_name):
-        if column_name not in self.default_columns:
-            raise ValueError("%s isn't a column in this table" % column_name)
-        
         try:
             values = (float(v) for v in self.values(column_name))
         except ValueError:
@@ -272,6 +275,16 @@ class TableFu(object):
         if not has_json:
             raise ValueError("Couldn't find a JSON library")
         return json.dumps(list(self.dict()), **kwargs)
+
+    def _eval_format(self,column_name, value, row):
+        if self.formatting.has_key(column_name):
+            func = self.formatting[column_name].get('filter', None)
+            args = self.formatting[column_name].get('args', [])
+            kwargs = self.formatting[column_name].get('options', {})
+            if func:
+                args = [row[arg].value for arg in args]
+                return format(value, func, *args, **kwargs)
+        return value
     
     # static methods for loading data
     @staticmethod
@@ -400,15 +413,8 @@ class Datum(object):
         version of value, then fall back to the default value
         if there's no set formatting.
         """
-        if self.table.formatting.has_key(self.column_name):
-            func = self.table.formatting[self.column_name].get('filter', None)
-            args = self.table.formatting[self.column_name].get('args', [])
-            kwargs = self.table.formatting[self.column_name].get('options', {})
-            if func:
-                row = self.table[self.row_num]
-                args = [row[arg].value for arg in args]
-                return format(self.value, func, *args, **kwargs)
-        return self.value
+        row = self.table[self.row_num]
+        return self.table._eval_format(self.column_name, self.value, row)
     
     def __eq__(self, other):
         if type(other) == type(self):
