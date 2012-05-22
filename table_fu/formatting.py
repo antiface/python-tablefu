@@ -223,7 +223,13 @@ def title(value, failure_string='N/A'):
     except:
         return failure_string
 
-
+def join(value, *args, **kwargs):
+    try:
+        delimiter = kwargs['delimiter']
+    except KeyError:
+        delimiter = ' '
+    return delimiter.join(args)
+    
 DEFAULT_FORMATTERS = {
     'ap_state': ap_state,
     'capfirst': capfirst,
@@ -231,6 +237,7 @@ DEFAULT_FORMATTERS = {
     'dollar_signs': dollar_signs,
     'intcomma': intcomma,
     'image': image,
+    'join': join,
     'link': link,
     'percentage': percentage,
     'percent_change': percent_change,
@@ -245,7 +252,7 @@ class Formatter(object):
     """
     A formatter is a function (or any callable, really)
     that takes a value and returns a nicer-looking value,
-    most likely a sting.
+    most likely a string.
     
     Formatter stores and calls those functions, keeping
     the namespace uncluttered.
