@@ -229,6 +229,10 @@ def join(value, *args, **kwargs):
     except KeyError:
         delimiter = ' '
     return delimiter.join(args)
+
+def template(value, *args, **kwargs):
+    template = kwargs['template']
+    return template % args
     
 DEFAULT_FORMATTERS = {
     'ap_state': ap_state,
@@ -244,6 +248,7 @@ DEFAULT_FORMATTERS = {
     'ratio': ratio,
     'stateface': stateface,
     'state_postal': state_postal,
+    'template': template,
     'title': title,
 }
 
