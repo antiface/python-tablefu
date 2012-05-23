@@ -249,6 +249,11 @@ class ValuesTest(TableTest):
         pages = sum([float(row[2]) for row in self.table])
         self.assertEqual(pages, t.total('Number of Pages'))
 
+    def test_formatting_takes_priority(self):
+        t = TableFu(self.csv_file,formatting={'Author': { 'filter': 'template', 'args': ['Author'], 'options': {'template': '*%s*'}}})
+        for v in t.values('Author'):
+            self.assertEqual('*',v[0])
+            self.assertEqual('*',v[-1])
 
 class FacetTest(TableTest):
 
