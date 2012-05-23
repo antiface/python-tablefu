@@ -158,7 +158,7 @@ class TableFu(object):
 
     def values(self, column_name, unique=False):
         if column_name in self.formatting:
-            result = [str(row[column_name]) for row in self.rows]
+            result = [row[column_name] for row in self.rows]
         else:    
             if column_name not in self.default_columns:
                 raise ValueError("%s isn't a column in this table" % column_name)
@@ -348,7 +348,7 @@ class Row(object):
         return self.table.columns
     
     def values(self):
-        return [str(self.get(k)) for k in self.keys()]
+        return [self.get(k) for k in self.keys()]
     
     def items(self):
         return zip(self.keys(), self.values())
