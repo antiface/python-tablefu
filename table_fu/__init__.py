@@ -348,7 +348,7 @@ class Row(object):
         return self.table.columns
     
     def values(self):
-        return [d.value for d in self.data]
+        return [str(self.get(k)) for k in self.keys()]
     
     def items(self):
         return zip(self.keys(), self.values())

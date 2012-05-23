@@ -89,6 +89,13 @@ class RowTest(TableTest):
                 self.table[i]
             )
 
+    def test_values(self):
+        "Check that values support virtual columns"
+        template_str = '*%s*'
+        t = TableFu(self.csv_file,columns=['tweaked', 'Author'],formatting={'tweaked': { 'filter': 'template', 'args': ['Author'], 'options': {'template': template_str }}})
+        for row in t.rows:
+            vals = row.values()
+            self.assertEqual(template_str % vals[1], vals[0])
 
 class RowColumnTest(TableTest):
      
